@@ -1,56 +1,510 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    crossorigin=""/>
-    <link rel="stylesheet" type="text/css" href="style.css">
-    <title>Document</title>
+
+    <!-- Leaflet -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+    <title>Legislación y Catastro</title>
+
+
+    <style>
+
+        /* =========================
+           CONFIGURACIÓN GENERAL
+           ========================= */
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f2f5f4;
+            color: #24323d;
+        }
+
+
+        /* =========================
+           ENCABEZADO
+           ========================= */
+
+        .header {
+            height: 90px;
+            background: #172f4d;
+            color: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 35px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .header span {
+            font-size: 15px;
+            opacity: 0.85;
+        }
+
+
+        /* =========================
+           CONTENEDOR PRINCIPAL
+           ========================= */
+
+        .container {
+            display: flex;
+            min-height: calc(100vh - 90px);
+        }
+
+
+        /* =========================
+           PANEL LATERAL
+           ========================= */
+
+        .sidebar {
+            width: 360px;
+            background: #ffffff;
+            padding: 28px 22px;
+
+            overflow-y: auto;
+
+            border-right: 1px solid #d7dddd;
+        }
+
+        .sidebar h2 {
+            margin-top: 0;
+            margin-bottom: 8px;
+
+            color: #172f4d;
+            font-size: 25px;
+        }
+
+        .intro {
+            color: #63727c;
+            line-height: 1.6;
+            margin-bottom: 22px;
+        }
+
+
+        /* =========================
+           CAJAS INTERACTIVAS
+           ========================= */
+
+        .info-box {
+            width: 100%;
+
+            background: #f8faf9;
+
+            border: 1px solid #d6dddd;
+            border-left: 5px solid #2d8060;
+
+            border-radius: 10px;
+
+            padding: 17px;
+
+            margin-bottom: 13px;
+
+            text-align: left;
+
+            cursor: pointer;
+
+            transition: all 0.25s ease;
+        }
+
+        .info-box:hover {
+            background: #eef6f2;
+
+            transform: translateY(-2px);
+
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.10);
+        }
+
+        .info-box.active {
+            background: #e7f2ed;
+            border-left-color: #172f4d;
+        }
+
+        .info-box h3 {
+            margin: 0 0 7px 0;
+
+            color: #172f4d;
+
+            font-size: 17px;
+        }
+
+        .info-box p {
+            margin: 0;
+
+            color: #65747c;
+
+            font-size: 14px;
+
+            line-height: 1.4;
+        }
+
+
+        /* =========================
+           PANEL DE INFORMACIÓN
+           ========================= */
+
+        .info-panel {
+            display: none;
+
+            background: #ffffff;
+
+            border-top: 4px solid #2d8060;
+
+            border-radius: 10px;
+
+            padding: 20px;
+
+            margin-top: 18px;
+
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .info-panel.visible {
+            display: block;
+        }
+
+        .info-panel h3 {
+            margin-top: 0;
+
+            color: #172f4d;
+
+            font-size: 20px;
+        }
+
+        .info-panel p {
+            color: #53636d;
+
+            line-height: 1.6;
+
+            font-size: 14px;
+        }
+
+        .info-panel h4 {
+            color: #2d8060;
+
+            margin-bottom: 5px;
+            margin-top: 18px;
+        }
+
+
+        /* =========================
+           COMPONENTES DE LOS MÁRTIRES
+           ========================= */
+
+        .componentes-martires {
+            margin-top: 15px;
+        }
+
+        .componente-martires {
+            margin-bottom: 10px;
+
+            border: 1px solid #d6dddd;
+
+            border-left: 4px solid #2d8060;
+
+            border-radius: 8px;
+
+            background: #f8faf9;
+
+            overflow: hidden;
+        }
+
+        .componente-martires summary {
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            padding: 13px;
+
+            cursor: pointer;
+
+            list-style: none;
+        }
+
+        .componente-martires summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .componente-martires summary:hover {
+            background: #eef6f2;
+        }
+
+        .icono-componente {
+            font-size: 20px;
+        }
+
+        .texto-componente {
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 3px;
+        }
+
+        .texto-componente strong {
+            color: #172f4d;
+
+            font-size: 14px;
+        }
+
+        .texto-componente small {
+            color: #63727c;
+
+            font-size: 12px;
+        }
+
+        .contenido-componente {
+            padding: 0 15px 15px 15px;
+
+            border-top: 1px solid #dfe5e3;
+
+            background: #ffffff;
+        }
+
+        .contenido-componente h4 {
+            margin-top: 15px;
+        }
+
+
+        /* =========================
+           MAPA
+           ========================= */
+
+        .map-container {
+            flex: 1;
+
+            padding: 18px;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+
+            min-height: 650px;
+
+            border-radius: 12px;
+
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.15);
+        }
+
+
+        /* =========================
+           RESPONSIVE
+           ========================= */
+
+        @media (max-width: 900px) {
+
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+
+            .map-container {
+                width: 100%;
+            }
+
+            #map {
+                min-height: 500px;
+            }
+
+        }
+
+    </style>
+
 </head>
+
+
 <body>
+
+
+    <!-- =========================
+         ENCABEZADO
+         ========================= -->
+
     <header class="header">
-    <h1>Legislación y Catastro</h1>
-    <span>Visor geográfico</span>
-</header>
 
-<div class="container">
+        <div>
 
-    <aside class="sidebar">
+            <h1>Legislación y Catastro</h1>
 
-        <h2>Información</h2>
+            <span>Visor geográfico</span>
 
-        <p>
-            Visualización geográfica para consulta y análisis
-            de información territorial.
-        </p>
-
-        <div class="info-box">
-            <h3>Ubicación</h3>
-            <p>Área de consulta geográfica</p>
         </div>
 
-        <div class="info-box">
-            <h3>Mapa interactivo</h3>
-            <p>Utiliza el mapa para explorar el territorio.</p>
-        </div>
+    </header>
 
-        <div class="info-box">
-            <h3>Herramientas</h3>
-            <p>Acerca, aleja y desplázate por el mapa.</p>
-        </div>
 
-    </aside>
+    <!-- =========================
+         CONTENIDO PRINCIPAL
+         ========================= -->
 
-    <main class="map-container">
-        <div id="map"></div>
-    </main>
+    <div class="container">
 
-</div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <!-- =========================
+             PANEL LATERAL
+             ========================= -->
 
-<script src="script.js"></script>
-     
+        <aside class="sidebar">
+
+            <h2>Los Mártires</h2>
+
+            <p class="intro">
+
+                Explore la información territorial de la localidad
+                mediante las siguientes categorías.
+
+            </p>
+
+
+            <!-- =========================
+                 CAJA 1
+                 ========================= -->
+
+            <button
+                class="info-box"
+                data-info="martires"
+            >
+
+                <h3>🏙️ Los Mártires</h3>
+
+                <p>
+                    Información general y componentes territoriales
+                    de la localidad.
+                </p>
+
+            </button>
+
+
+            <!-- =========================
+                 CAJA 2
+                 ========================= -->
+
+            <button
+                class="info-box"
+                data-info="pregunta"
+            >
+
+                <h3>❓ Pregunta de investigación</h3>
+
+                <p>
+                    Pregunta y enfoque del trabajo.
+                </p>
+
+            </button>
+
+
+            <!-- =========================
+                 CAJA 3
+                 ========================= -->
+
+            <button
+                class="info-box"
+                data-info="cambios"
+            >
+
+                <h3>🔄 Cambios en la zona de trabajo</h3>
+
+                <p>
+                    Transformaciones urbanas y territoriales.
+                </p>
+
+            </button>
+
+
+            <!-- =========================
+                 CAJA 4
+                 ========================= -->
+
+            <button
+                class="info-box"
+                data-info="anexos"
+            >
+
+                <h3>📎 Anexos</h3>
+
+                <p>
+                    Fotografías, mapas y material complementario.
+                </p>
+
+            </button>
+
+
+            <!-- =========================
+                 PANEL DE INFORMACIÓN
+                 ========================= -->
+
+            <div
+                id="info-panel"
+                class="info-panel"
+            >
+
+                <h3>Seleccione una categoría</h3>
+
+                <p>
+                    Haga clic en una de las cajas para consultar
+                    la información.
+                </p>
+
+            </div>
+
+
+        </aside>
+
+
+        <!-- =========================
+             MAPA
+             ========================= -->
+
+        <main class="map-container">
+
+            <div id="map"></div>
+
+        </main>
+
+
+    </div>
+
+
+    <!-- =========================
+         LEAFLET
+         ========================= -->
+
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+    </script>
+
+
+    <!-- =========================
+         NUESTRO JAVASCRIPT
+         ========================= -->
+
+    <script src="script.js"></script>
+
+
 </body>
+
 </html>
