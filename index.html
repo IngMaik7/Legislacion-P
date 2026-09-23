@@ -350,7 +350,9 @@
 
             <h1>Legislación y Catastro</h1>
 
-            <span>Visor geográfico</span>
+            <button id="visor-btn" class="visor-btn">
+                🗺️ Visor geográfico
+            </button>
 
         </div>
 
@@ -453,23 +455,6 @@
             </button>
 
 
-            <!-- =========================
-                 PANEL DE INFORMACIÓN
-                 ========================= -->
-
-            <div
-                id="info-panel"
-                class="info-panel"
-            >
-
-                <h3>Seleccione una categoría</h3>
-
-                <p>
-                    Haga clic en una de las cajas para consultar
-                    la información.
-                </p>
-
-            </div>
 
 
         </aside>
@@ -479,10 +464,21 @@
              MAPA
              ========================= -->
 
-        <main class="map-container">
+        <main class="map-container" id="visor-mapa">
 
             <div id="map"></div>
+            
+            <div
+                id="info-panel"
+                class="info-panel"
+            >
+                <h3>Seleccione una categoría</h3>
 
+                <p>
+                    Haga clic en una de las cajas para consultar
+                    la información.
+                </p>
+            </div>
         </main>
 
 

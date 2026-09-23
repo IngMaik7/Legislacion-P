@@ -480,7 +480,8 @@ var cajas =
 var infoPanel =
     document.getElementById('info-panel');
 
-
+var visorMapa =
+    document.getElementById('visor-mapa');
 /* =================================
    INTERACCIÓN DE LAS CAJAS
    ================================= */
@@ -503,6 +504,9 @@ cajas.forEach(function(caja) {
 
 
         /* Mostrar información */
+        document.getElementById('map').style.display = "none";
+
+        infoPanel.style.display = "block";
 
         infoPanel.innerHTML = `
 
@@ -534,5 +538,23 @@ cajas.forEach(function(caja) {
         caja.classList.add('active');
 
     });
+
+});
+// =================================
+// MOSTRAR VISOR GEOGRÁFICO
+// =================================
+
+var visorBtn = document.getElementById("visor-btn");
+var visorMapa = document.getElementById("visor-mapa");
+
+visorMapa.style.display = "none";
+
+visorBtn.addEventListener("click", function () {
+
+    visorMapa.style.display = "block";
+
+    setTimeout(function () {
+        map.invalidateSize();
+    }, 100);
 
 });
